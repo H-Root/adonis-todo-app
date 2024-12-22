@@ -8,15 +8,14 @@
 */
 
 import router from '@adonisjs/core/services/router'
+const todosController = () => import('#controllers/todos_controller')
 
-router.get('/', async () => {
-  return {
-    hello: 'world',
-  }
-})
+router.group(() => {
+  router.get('/todo', [todosController, 'index'])
 
-router.post('/', async () => {
-  return {
-    test: 'I Love U ALL',
-  }
+  router.post('/todo', [todosController, 'store'])
+
+  router.put('/todo/:id', [todosController, 'update']).where('id', router.matchers.number())
+
+  router.delete('/todo/:id', [todosController, 'destroy']).where('id', router.matchers.number())
 })
