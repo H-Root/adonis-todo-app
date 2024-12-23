@@ -1,9 +1,11 @@
 import TodoService from '#services/todo_service'
 import { createTodoValidator, updateTodoValidator } from '#validators/todo'
+import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
+@inject()
 export default class TodosController {
-  private todoService = new TodoService()
+  constructor(protected todoService: TodoService) {}
 
   async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createTodoValidator)
