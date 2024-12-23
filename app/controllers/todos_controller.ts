@@ -7,18 +7,24 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class TodosController {
   constructor(protected todoService: TodoService) {}
 
-  async store({ request, response }: HttpContext) {
-    const payload = await request.validateUsing(createTodoValidator)
+  async store({ request, response, auth }: HttpContext) {
+    const payload = await request.validateUsing(createTodoValidator, {
+      meta: {
+        user_id: auth.user!.id,
+      },
+    })
 
-    const todo = await this.todoService.createTodo(payload)
+    // const todo = await this.todoService.createTodo(payload)
+    const todo = await auth.user!.related('todos').create(payload)
 
     return response.created(todo)
   }
 
-  async update({ params, request, response }: HttpContext) {
+  async update({ params, request, response, auth }: HttpContext) {
     const payload = await request.validateUsing(updateTodoValidator, {
       meta: {
         id: params.id,
+        user_id: auth.user!.id,
       },
     })
 
@@ -31,17 +37,25 @@ export default class TodosController {
   }
 
   async index({ response, auth }: HttpContext) {
-    // console.log({ auth: auth.user!.related('todos') })
-    // auth.user!.related('todos').
-    const todos = await this.todoService.getAllTodos()
+    const todos = await auth.user!.related('todos').query()
     return response.ok(todos)
   }
 
-  async destroy({ params, response }: HttpContext) {
-    const deleted = await this.todoService.deleteTodo(params.id)
-    if (!deleted) {
-      return response.notFound({ message: 'Todo not found' })
+  async destroy({ params, response, auth }: HttpContext) {
+    const userId = auth.user!.id
+
+    const todo = await this.todoService.getTodoById(params.id)
+
+    if (!todo) {
+      return response.notFound()
     }
+
+    if (userId !== todo.userId) {
+      return response.forbidden('You are not allowed to delete this resource')
+    }
+
+    await todo.delete()
+
     return response.noContent()
   }
 }

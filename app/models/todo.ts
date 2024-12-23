@@ -7,6 +7,9 @@ export default class Todo extends BaseModel {
   declare id: number
 
   @column()
+  declare userId: number
+
+  @column()
   declare priority: Priority
 
   @column()

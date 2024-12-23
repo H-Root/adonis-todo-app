@@ -14,7 +14,7 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 
 export default class User extends compose(BaseModel, AuthFinder) {
   @hasMany(() => Todo)
-  declare posts: HasMany<typeof Todo>
+  declare todos: HasMany<typeof Todo>
 
   @column({ isPrimary: true })
   declare id: number

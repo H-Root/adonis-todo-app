@@ -8,12 +8,12 @@ export default class TodoService {
     return await Todo.query().orderBy('createdAt', 'desc')
   }
 
-  // /**
-  //  * Get a single todo by ID
-  //  */
-  // public async getTodoById(id: number): Promise<Todo | null> {
-  //   return await Todo.find(id)
-  // }
+  /**
+   * Get a single todo by ID
+   */
+  public async getTodoById(id: number): Promise<Todo | null> {
+    return await Todo.find(id)
+  }
 
   /**
    * Create a new todo
