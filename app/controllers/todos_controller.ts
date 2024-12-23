@@ -30,7 +30,9 @@ export default class TodosController {
     return response.ok(todo)
   }
 
-  async index({ response }: HttpContext) {
+  async index({ response, auth }: HttpContext) {
+    // console.log({ auth: auth.user!.related('todos') })
+    // auth.user!.related('todos').
     const todos = await this.todoService.getAllTodos()
     return response.ok(todos)
   }

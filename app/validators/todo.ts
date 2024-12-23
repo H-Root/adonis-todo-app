@@ -9,10 +9,7 @@ export const createTodoValidator = vine.compile(
       .minLength(3)
       .maxLength(100)
       .unique({ table: 'todos', column: 'title' }),
-    body: vine.string().trim().minLength(3).maxLength(200).unique({
-      table: 'todos',
-      column: 'title',
-    }),
+    body: vine.string().trim().minLength(3).maxLength(200),
     priority: vine.enum(Object.values(Priority)),
   })
 )
