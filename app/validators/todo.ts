@@ -34,6 +34,11 @@ export const updateTodoValidator = vine.withMetaData<{ id: number }>().compile(
       }),
     body: vine.string().trim().minLength(3).maxLength(200),
     priority: vine.enum(Object.values(Priority)),
+  })
+)
+
+export const toggleIsFinishedTodo = vine.withMetaData<{ id: number }>().compile(
+  vine.object({
     isFinished: vine.boolean(),
   })
 )

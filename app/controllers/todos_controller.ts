@@ -1,5 +1,5 @@
 import TodoService from '#services/todo_service'
-import { createTodoValidator, updateTodoValidator } from '#validators/todo'
+import { createTodoValidator, toggleIsFinishedTodo, updateTodoValidator } from '#validators/todo'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -17,6 +17,21 @@ export default class TodosController {
 
   async update({ params, request, response }: HttpContext) {
     const payload = await request.validateUsing(updateTodoValidator, {
+      meta: {
+        id: params.id,
+      },
+    })
+
+    const todo = await this.todoService.updateTodo(params.id, payload)
+
+    if (!todo) {
+      return response.notFound({ message: 'Todo not found' })
+    }
+    return response.ok(todo)
+  }
+
+  async patch({ params, request, response }: HttpContext) {
+    const payload = await request.validateUsing(toggleIsFinishedTodo, {
       meta: {
         id: params.id,
       },

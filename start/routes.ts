@@ -17,5 +17,7 @@ router.group(() => {
 
   router.put('/todo/:id', [todosController, 'update']).where('id', router.matchers.number())
 
+  router.patch('/todo/:id', [todosController, 'patch']).where('id', router.matchers.number())
+
   router.delete('/todo/:id', [todosController, 'destroy']).where('id', router.matchers.number())
 })
