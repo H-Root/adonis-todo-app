@@ -12,4 +12,6 @@
 |
 */
 
-export const policies = {}
+export const policies = {
+  TodoPolicy: () => import('#policies/todo_policy'),
+}

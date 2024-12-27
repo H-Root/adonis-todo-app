@@ -1,4 +1,5 @@
-import { editTodo } from '#abilities/main'
+// not needed since we pre-register it in #policies/main.ts
+// import TodoPolicy from '#policies/todo_policy'
 import TodoService from '#services/todo_service'
 import { createTodoValidator, toggleIsFinishedTodo, updateTodoValidator } from '#validators/todo'
 import { inject } from '@adonisjs/core'
@@ -8,7 +9,13 @@ import type { HttpContext } from '@adonisjs/core/http'
 export default class TodosController {
   constructor(protected todoService: TodoService) {}
 
-  async store({ request, response, auth }: HttpContext) {
+  async store({ request, response, auth, bouncer }: HttpContext) {
+    if (await bouncer.with('TodoPolicy').denies('create')) {
+      return response.forbidden({
+        msg: 'not allowed to access resource',
+      })
+    }
+
     const payload = await request.validateUsing(createTodoValidator, {
       meta: {
         user_id: auth.user!.id,
@@ -30,7 +37,7 @@ export default class TodosController {
       return response.notFound({ message: 'Todo not found' })
     }
 
-    if (await bouncer.denies(editTodo, foundTodo)) {
+    if (await bouncer.with('TodoPolicy').denies('update', foundTodo)) {
       return response.forbidden({
         msg: 'You are not allowed to modify this resource',
       })
@@ -48,7 +55,7 @@ export default class TodosController {
       return response.notFound()
     }
 
-    if (await bouncer.denies(editTodo, foundTodo)) {
+    if (await bouncer.with('TodoPolicy').denies('update', foundTodo)) {
       return response.forbidden({
         msg: 'You are not allowed to modify this resource',
       })
@@ -81,7 +88,7 @@ export default class TodosController {
       return response.notFound()
     }
 
-    if (await bouncer.denies(editTodo, todo)) {
+    if (await bouncer.with('TodoPolicy').denies('delete', todo)) {
       return response.forbidden({
         msg: 'You are not allowed to modify this resource',
       })
