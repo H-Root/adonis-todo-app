@@ -2,6 +2,7 @@ import UserService from '#services/user_service'
 import { createUserValidator, signInValidator } from '#validators/user'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import emitter from '@adonisjs/core/services/emitter'
 
 @inject()
 export default class UsersController {
@@ -20,6 +21,7 @@ export default class UsersController {
   async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createUserValidator)
     const newUser = await this.userService.createUser(payload)
+    emitter.emit('user:registered', newUser)
     return response.created(newUser)
   }
 
@@ -42,7 +44,7 @@ export default class UsersController {
   /**
    * Edit individual record
    */
-  async edit({ params }: HttpContext) {}
+  // async edit({ params }: HttpContext) {}
 
   /**
    * Handle form submission for the edit action
@@ -52,5 +54,5 @@ export default class UsersController {
   /**
    * Delete record
    */
-  async destroy({ params }: HttpContext) {}
+  // async destroy({ params }: HttpContext) {}
 }

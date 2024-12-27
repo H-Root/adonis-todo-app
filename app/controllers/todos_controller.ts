@@ -4,6 +4,7 @@ import TodoService from '#services/todo_service'
 import { createTodoValidator, toggleIsFinishedTodo, updateTodoValidator } from '#validators/todo'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import emitter from '@adonisjs/core/services/emitter'
 
 @inject()
 export default class TodosController {
@@ -78,6 +79,7 @@ export default class TodosController {
 
   async index({ response, auth }: HttpContext) {
     const todos = await auth.user!.related('todos').query()
+    emitter.emit('todo:list_todo', todos)
     return response.ok(todos)
   }
 
