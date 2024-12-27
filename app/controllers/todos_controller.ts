@@ -31,12 +31,9 @@ export default class TodosController {
     }
 
     if (await bouncer.denies(editTodo, foundTodo)) {
-      return response.abort(
-        {
-          msg: 'You are not allowed to modify this resource',
-        },
-        403
-      )
+      return response.forbidden({
+        msg: 'You are not allowed to modify this resource',
+      })
     }
 
     const todo = await this.todoService.updateTodo(params.id, payload)
@@ -44,7 +41,19 @@ export default class TodosController {
     return response.ok(todo)
   }
 
-  async update({ params, request, response, auth }: HttpContext) {
+  async update({ params, request, response, auth, bouncer }: HttpContext) {
+    const foundTodo = await this.todoService.getTodoById(params.id)
+
+    if (!foundTodo) {
+      return response.notFound()
+    }
+
+    if (await bouncer.denies(editTodo, foundTodo)) {
+      return response.forbidden({
+        msg: 'You are not allowed to modify this resource',
+      })
+    }
+
     const payload = await request.validateUsing(updateTodoValidator, {
       meta: {
         id: params.id,
@@ -65,17 +74,17 @@ export default class TodosController {
     return response.ok(todos)
   }
 
-  async destroy({ params, response, auth }: HttpContext) {
-    const userId = auth.user!.id
-
+  async destroy({ params, response, bouncer }: HttpContext) {
     const todo = await this.todoService.getTodoById(params.id)
 
     if (!todo) {
       return response.notFound()
     }
 
-    if (userId !== todo.userId) {
-      return response.forbidden('You are not allowed to delete this resource')
+    if (await bouncer.denies(editTodo, todo)) {
+      return response.forbidden({
+        msg: 'You are not allowed to modify this resource',
+      })
     }
 
     await todo.delete()
