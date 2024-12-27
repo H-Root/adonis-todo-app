@@ -20,6 +20,8 @@ router
 
     router.put('/:id', [todosController, 'update']).where('id', router.matchers.number())
 
+    router.patch('/:id', [todosController, 'patch']).where('id', router.matchers.number())
+
     router.delete('/:id', [todosController, 'destroy']).where('id', router.matchers.number())
   })
   .prefix('/todo')

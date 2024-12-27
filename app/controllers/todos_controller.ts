@@ -1,5 +1,6 @@
+import { editTodo } from '#abilities/main'
 import TodoService from '#services/todo_service'
-import { createTodoValidator, updateTodoValidator } from '#validators/todo'
+import { createTodoValidator, toggleIsFinishedTodo, updateTodoValidator } from '#validators/todo'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 
@@ -18,6 +19,29 @@ export default class TodosController {
     const todo = await auth.user!.related('todos').create(payload)
 
     return response.created(todo)
+  }
+
+  async patch({ params, request, response, bouncer }: HttpContext) {
+    const payload = await request.validateUsing(toggleIsFinishedTodo)
+
+    const foundTodo = await this.todoService.getTodoById(params.id)
+
+    if (!foundTodo) {
+      return response.notFound({ message: 'Todo not found' })
+    }
+
+    if (await bouncer.denies(editTodo, foundTodo)) {
+      return response.abort(
+        {
+          msg: 'You are not allowed to modify this resource',
+        },
+        403
+      )
+    }
+
+    const todo = await this.todoService.updateTodo(params.id, payload)
+
+    return response.ok(todo)
   }
 
   async update({ params, request, response, auth }: HttpContext) {
