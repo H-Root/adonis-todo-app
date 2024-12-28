@@ -1,7 +1,12 @@
 // not needed since we pre-register it in #policies/main.ts
 // import TodoPolicy from '#policies/todo_policy'
 import TodoService from '#services/todo_service'
-import { createTodoValidator, toggleIsFinishedTodo, updateTodoValidator } from '#validators/todo'
+import {
+  createTodoValidator,
+  paginationRequest,
+  toggleIsFinishedTodo,
+  updateTodoValidator,
+} from '#validators/todo'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import emitter from '@adonisjs/core/services/emitter'
@@ -77,8 +82,14 @@ export default class TodosController {
     return response.ok(todo)
   }
 
-  async index({ response, auth }: HttpContext) {
-    const todos = await auth.user!.related('todos').query()
+  async index({ response, auth, request }: HttpContext) {
+    const qs = await paginationRequest.validate(request.qs())
+    const todos = await auth
+      .user!.related('todos')
+      .query()
+      .orderBy('createdAt', 'asc')
+      .paginate(qs.page, qs.perPage)
+    // .paginate()
     emitter.emit('todo:list_todo', todos)
     return response.ok(todos)
   }

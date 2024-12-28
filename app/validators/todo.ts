@@ -47,3 +47,10 @@ export const toggleIsFinishedTodo = vine.compile(
     isFinished: vine.boolean(),
   })
 )
+
+export const paginationRequest = vine.compile(
+  vine.object({
+    page: vine.number().positive(),
+    perPage: vine.number().positive(),
+  })
+)
