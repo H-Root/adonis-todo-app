@@ -1,5 +1,5 @@
 import vine from '@vinejs/vine'
-import { Priority } from '../../constants/priority.js'
+import { Priority } from '../constants/priority.js'
 
 export const createTodoValidator = vine.withMetaData<{ user_id: number }>().compile(
   vine.object({

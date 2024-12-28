@@ -1,5 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { Priority } from '../../constants/priority.js'
+import { Priority } from '../../app/constants/priority.js'
 
 export default class extends BaseSchema {
   protected tableName = 'todos'
