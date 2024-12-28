@@ -1,6 +1,7 @@
 import app from '@adonisjs/core/services/app'
 import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import { errors } from '@adonisjs/auth'
+import { errors as core_errors } from '@adonisjs/core'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -16,6 +17,12 @@ export default class HttpExceptionHandler extends ExceptionHandler {
   async handle(error: unknown, ctx: HttpContext) {
     if (error instanceof errors.E_INVALID_CREDENTIALS) {
       return ctx.response.status(error.status).send(error.getResponseMessage(error, ctx))
+    }
+
+    if (error instanceof core_errors.E_ROUTE_NOT_FOUND) {
+      return ctx.response.status(error.status).json({
+        msg: 'router not found',
+      })
     }
 
     return super.handle(error, ctx)
