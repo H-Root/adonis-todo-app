@@ -32,7 +32,9 @@
     "#database/*": "./database/*.js",
     "#start/*": "./start/*.js",
     "#tests/*": "./tests/*.js",
-    "#config/*": "./config/*.js"
+    "#config/*": "./config/*.js",
+    "#types/*": "./types/*.js",
+    "#jobs/*": "./jobs/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
@@ -58,9 +60,12 @@
     "@adonisjs/bouncer": "^3.1.4",
     "@adonisjs/core": "^6.17.0",
     "@adonisjs/cors": "^2.2.1",
+    "@adonisjs/lock": "^1.1.1",
     "@adonisjs/lucid": "^21.5.1",
     "@adonisjs/redis": "^9.1.0",
     "@vinejs/vine": "^3.0.0",
+    "bullmq": "^5.34.5",
+    "cron": "^3.3.1",
     "luxon": "^3.5.0",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2"

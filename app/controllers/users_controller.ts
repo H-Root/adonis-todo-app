@@ -17,6 +17,11 @@ export default class UsersController {
     if (!cachedUsers) {
       const users = await this.userService.getAllUsers()
       FetchUsers.dispatch()
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve(null)
+        }, 2000)
+      })
       return response.ok(users)
     }
     return response.ok(JSON.parse(cachedUsers as string))
