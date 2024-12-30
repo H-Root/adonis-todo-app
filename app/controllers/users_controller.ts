@@ -1,8 +1,10 @@
+import FetchUsers from '#events/fetch_users'
 import UserRegistered from '#events/user_registered'
 import UserService from '#services/user_service'
 import { createUserValidator, signInValidator } from '#validators/user'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
+import redis from '@adonisjs/redis/services/main'
 
 @inject()
 export default class UsersController {
@@ -11,8 +13,13 @@ export default class UsersController {
    * Display a list of resource
    */
   async index({ response }: HttpContext) {
-    const users = await this.userService.getAllUsers()
-    return response.ok(users)
+    const cachedUsers = await redis.get('users')
+    if (!cachedUsers) {
+      const users = await this.userService.getAllUsers()
+      FetchUsers.dispatch()
+      return response.ok(users)
+    }
+    return response.ok(JSON.parse(cachedUsers as string))
   }
 
   /**
@@ -22,6 +29,7 @@ export default class UsersController {
     const payload = await request.validateUsing(createUserValidator)
     const newUser = await this.userService.createUser(payload)
     UserRegistered.dispatch(newUser)
+    FetchUsers.dispatch()
     return response.created(newUser)
   }
 
