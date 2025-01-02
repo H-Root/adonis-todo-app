@@ -1,8 +1,7 @@
 import User from '#models/user'
 
 export default class SendVerificationEmail {
-  handle(user: User) {
-    console.log(user)
+  handle(_user: User) {
     // Send email
   }
 }

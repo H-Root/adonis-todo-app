@@ -5,6 +5,8 @@ import { createUserValidator, signInValidator } from '#validators/user'
 import { inject } from '@adonisjs/core'
 import type { HttpContext } from '@adonisjs/core/http'
 import redis from '@adonisjs/redis/services/main'
+import queue from '@rlanz/bull-queue/services/main'
+import DelayedJop from '../jobs/delayed_job.js'
 
 @inject()
 export default class UsersController {
@@ -33,6 +35,7 @@ export default class UsersController {
   async store({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createUserValidator)
     const newUser = await this.userService.createUser(payload)
+    queue.dispatch(DelayedJop, { email: payload.email })
     UserRegistered.dispatch(newUser)
     FetchUsers.dispatch()
     return response.created(newUser)

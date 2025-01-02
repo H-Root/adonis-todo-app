@@ -9,6 +9,6 @@ emitter.on(UserRegistered, [SendVerificationEmail])
 
 emitter.on(FetchUsers, [InvalidateCache])
 
-emitter.on('todo:list_todo', function (todos) {
-  console.log(todos)
+emitter.on('todo:list_todo', function (_todos) {
+  // console.log(todos)
 })
